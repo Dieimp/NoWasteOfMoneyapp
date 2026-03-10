@@ -5,11 +5,12 @@ import { formatCurrency } from "@/lib/transactions-data"
 import { Calendar, ChevronRight } from "lucide-react"
 
 interface MonthSelectorProps {
+  userName: string
   months: MonthData[]
   onSelect: (monthIndex: number) => void
 }
 
-export function MonthSelector({ months, onSelect }: MonthSelectorProps) {
+export function MonthSelector({ userName, months, onSelect }: MonthSelectorProps) {
   return (
     <div className="flex min-h-dvh flex-col bg-background">
       <div className="bg-gradient-to-br from-[oklch(0.38_0.18_270)] via-[oklch(0.35_0.20_265)] to-[oklch(0.30_0.15_250)] px-5 pb-10 pt-12">
@@ -18,7 +19,7 @@ export function MonthSelector({ months, onSelect }: MonthSelectorProps) {
             <Calendar className="h-5 w-5 text-[oklch(0.95_0_0)]" />
           </div>
           <div>
-            <h1 className="text-xl font-bold text-[oklch(0.98_0_0)]">Minhas Finanças</h1>
+            <h1 className="text-xl font-bold text-[oklch(0.98_0_0)]">Olá, {userName}</h1>
             <p className="text-sm text-[oklch(0.78_0.06_265)]">
               Selecione um mês para ver as transações
             </p>

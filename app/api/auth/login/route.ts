@@ -21,7 +21,8 @@ export async function POST(request: NextRequest) {
             )
         }
 
-        const data = await backendResponse.json()
+        const envelope = await backendResponse.json()
+        const data = envelope.data
         // data: { accessToken, expiresAt, name, email }
 
         const expiresAt = new Date(data.expiresAt)
@@ -35,6 +36,18 @@ export async function POST(request: NextRequest) {
         // Set JWT as HTTP-only cookie
         response.cookies.set("access_token", data.accessToken, {
             httpOnly: true,
+            secure: process.env.NODE_ENV === "production",
+            sameSite: "lax",
+            path: "/",
+            expires: expiresAt,
+        })
+
+        // Set user info cookie (readable by client)
+        response.cookies.set("user_info", JSON.stringify({
+            name: data.name,
+            email: data.email,
+        }), {
+            httpOnly: false,
             secure: process.env.NODE_ENV === "production",
             sameSite: "lax",
             path: "/",
