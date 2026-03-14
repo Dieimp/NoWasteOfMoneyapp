@@ -2,15 +2,12 @@
 
 import { useState, useEffect } from "react"
 import { X, Loader2, Plus } from "lucide-react"
+import { CreateMovementModal } from "./create-movement-modal"
+
 interface MovementTemplate {
     id: string;
     name: string;
-    description: string;
-    movementTypeId: number;
 }
-
-import { ManageMovementModal } from "./manage-movement-modal"
-import { Settings2 } from "lucide-react"
 
 interface NewMovementModalProps {
     isOpen: boolean;
@@ -29,7 +26,6 @@ export function NewMovementModal({ isOpen, onClose, onSuccess, personId, baseDat
     const [isSubmitting, setIsSubmitting] = useState(false)
     const [error, setError] = useState("")
     const [isNestedModalOpen, setIsNestedModalOpen] = useState(false)
-    const [editingTemplate, setEditingTemplate] = useState<MovementTemplate | null>(null)
 
     useEffect(() => {
         if (isOpen && movements.length === 0) {
@@ -52,9 +48,7 @@ export function NewMovementModal({ isOpen, onClose, onSuccess, personId, baseDat
                 const data = await res.json()
                 setMovements(data.map((m: any) => ({
                     id: m.id || m.Id,
-                    name: m.name || m.Name,
-                    description: m.description || m.Description || "",
-                    movementTypeId: m.movementTypeId || m.MovementTypeId || 1
+                    name: m.name || m.Name
                 })))
             } else {
                 console.error("Failed to fetch movements for combobox")
@@ -141,35 +135,14 @@ export function NewMovementModal({ isOpen, onClose, onSuccess, personId, baseDat
                             <label className="text-sm font-medium text-foreground">
                                 Tipo de Movimentação
                             </label>
-                            <div className="flex items-center gap-3">
-                                {selectedMovementId && (
-                                    <button
-                                        type="button"
-                                        onClick={() => {
-                                            const template = movements.find(m => m.id === selectedMovementId);
-                                            if (template) {
-                                                setEditingTemplate(template);
-                                                setIsNestedModalOpen(true);
-                                            }
-                                        }}
-                                        className="flex items-center gap-1 text-xs font-bold text-muted-foreground hover:text-primary transition-colors"
-                                    >
-                                        <Settings2 className="h-3 w-3" />
-                                        Editar
-                                    </button>
-                                )}
-                                <button
-                                    type="button"
-                                    onClick={() => {
-                                        setEditingTemplate(null);
-                                        setIsNestedModalOpen(true);
-                                    }}
-                                    className="flex items-center gap-1 text-xs font-bold text-primary hover:underline"
-                                >
-                                    <Plus className="h-3 w-3" />
-                                    Novo
-                                </button>
-                            </div>
+                            <button
+                                type="button"
+                                onClick={() => setIsNestedModalOpen(true)}
+                                className="flex items-center gap-1 text-xs font-bold text-primary hover:underline"
+                            >
+                                <Plus className="h-3 w-3" />
+                                Novo
+                            </button>
                         </div>
                         <select
                             title="Selecione a movimentação"
@@ -213,17 +186,12 @@ export function NewMovementModal({ isOpen, onClose, onSuccess, personId, baseDat
                 </form>
             </div>
 
-            <ManageMovementModal
+            <CreateMovementModal
                 isOpen={isNestedModalOpen}
-                initialData={editingTemplate}
-                onClose={() => {
-                    setIsNestedModalOpen(false);
-                    setEditingTemplate(null);
-                }}
+                onClose={() => setIsNestedModalOpen(false)}
                 onSuccess={() => {
                     setIsNestedModalOpen(false)
-                    setEditingTemplate(null)
-                    fetchMovements() // Refresh the list so changes appear
+                    fetchMovements() // Refresh the list so the new category appears
                 }}
             />
         </div>

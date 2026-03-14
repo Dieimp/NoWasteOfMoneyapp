@@ -1,45 +1,20 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import { X, Loader2 } from "lucide-react"
 
-interface MovementTemplate {
-    id: string;
-    name: string;
-    description: string;
-    movementTypeId: number;
-}
-
-interface ManageMovementModalProps {
+interface CreateMovementModalProps {
     isOpen: boolean;
     onClose: () => void;
     onSuccess: () => void;
-    initialData?: MovementTemplate | null;
 }
 
-export function ManageMovementModal({ isOpen, onClose, onSuccess, initialData }: ManageMovementModalProps) {
+export function CreateMovementModal({ isOpen, onClose, onSuccess }: CreateMovementModalProps) {
     const [name, setName] = useState("")
     const [description, setDescription] = useState("")
     const [movementTypeId, setMovementTypeId] = useState("1") // 1: Debit, 2: Credit
     const [isSubmitting, setIsSubmitting] = useState(false)
     const [error, setError] = useState("")
-
-    const isEditMode = !!initialData;
-
-    useEffect(() => {
-        if (isOpen) {
-            if (initialData) {
-                setName(initialData.name)
-                setDescription(initialData.description || "")
-                setMovementTypeId(initialData.movementTypeId.toString())
-            } else {
-                setName("")
-                setDescription("")
-                setMovementTypeId("1")
-            }
-            setError("")
-        }
-    }, [isOpen, initialData])
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
@@ -53,31 +28,31 @@ export function ManageMovementModal({ isOpen, onClose, onSuccess, initialData }:
         setIsSubmitting(true)
 
         try {
-            const url = isEditMode ? `/api/movements?id=${initialData.id}` : "/api/movements"
-            const method = isEditMode ? "PUT" : "POST"
-
-            const res = await fetch(url, {
-                method,
+            const res = await fetch("/api/movements", {
+                method: "POST",
                 headers: {
                     "Content-Type": "application/json"
                 },
                 body: JSON.stringify({
                     name,
-                    description: description || name,
+                    description: description || name, // Fallback to name if desc is empty
                     movementTypeId: parseInt(movementTypeId)
                 })
             })
 
             if (res.ok) {
+                setName("")
+                setDescription("")
+                setMovementTypeId("1")
                 onSuccess()
                 onClose()
             } else {
                 const errData = await res.json().catch(() => null)
-                setError(errData?.error || `Erro ao ${isEditMode ? "atualizar" : "criar"} tipo de movimentação.`)
+                setError(errData?.error || "Erro ao criar tipo de movimentação.")
             }
         } catch (err) {
             console.error(err)
-            setError(`Erro de rede ao ${isEditMode ? "atualizar" : "criar"} tipo de movimentação.`)
+            setError("Erro de rede ao criar tipo de movimentação.")
         } finally {
             setIsSubmitting(false)
         }
@@ -86,14 +61,12 @@ export function ManageMovementModal({ isOpen, onClose, onSuccess, initialData }:
     if (!isOpen) return null
 
     return (
-        <div className="fixed inset-0 z-[70] flex items-center justify-center bg-black/60 px-4">
+        <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/60 px-4">
             <div
                 className="w-full max-w-sm bg-background px-6 pb-8 pt-6 shadow-2xl rounded-2xl animate-in zoom-in-95 duration-200"
             >
                 <div className="flex items-center justify-between mb-6">
-                    <h2 className="text-lg font-bold">
-                        {isEditMode ? "Editar Categoria" : "Nova Categoria"}
-                    </h2>
+                    <h2 className="text-lg font-bold">Novo Tipo de Movimentação</h2>
                     <button
                         onClick={onClose}
                         className="rounded-full p-2 hover:bg-muted transition-colors"
