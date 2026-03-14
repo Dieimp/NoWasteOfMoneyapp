@@ -24,61 +24,35 @@ export default function Home() {
   const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
-    // Get user info from cookie
-    try {
-      const userInfoStr = getCookie("user_info")
-      if (userInfoStr) {
-        const userInfo = JSON.parse(decodeURIComponent(userInfoStr))
-        if (userInfo.name) setUserName(userInfo.name)
-      }
-    } catch (e) {
-      console.error("Error reading user_info cookie:", e)
-    }
-
-    // Fetch month movements
-    async function fetchData() {
+    // Initialize month movements
+    async function initData() {
       try {
-        const res = await fetch("/api/month-movements")
-        if (!res.ok) {
-          throw new Error("Failed to fetch")
+        try {
+          const userInfoStr = getCookie("user_info")
+          if (userInfoStr) {
+            const userInfo = JSON.parse(decodeURIComponent(userInfoStr))
+            if (userInfo.name) setUserName(userInfo.name)
+          }
+        } catch (e) {
+          console.error("Error reading user_info cookie:", e)
         }
 
-        const responseJson = await res.json()
-        const backendMovements = responseJson.data || []
-
-        // Build months for the current year up to the current month
         const currentDate = new Date();
         const currentYear = currentDate.getFullYear();
         const currentMonth = currentDate.getMonth() + 1; // 1-12
-        const newMonthsData: MonthData[] = [];
+        const initialMonthsData: MonthData[] = [];
 
         for (let i = 1; i <= currentMonth; i++) {
-          const monthMovements = backendMovements.filter((m: any) => m.month === i && m.year === currentYear);
-
-          let total = 0;
-          const mappedTransactions: Transaction[] = monthMovements.map((m: any) => {
-            total += m.value || 0;
-            return {
-              id: m.id,
-              type: (m.value || 0) >= 0 ? "income" : "expense",
-              amount: Math.abs(m.value || 0),
-              date: m.date || new Date(currentYear, i - 1, 1).toLocaleDateString("pt-BR"),
-              description: m.movement?.name || "Transação",
-            };
-          });
-
-          if (mappedTransactions.length > 0) {
-            newMonthsData.push({
-              month: i,
-              year: currentYear,
-              label: `${MONTH_NAMES[i - 1]} ${currentYear}`,
-              total: total,
-              transactions: mappedTransactions
-            })
-          }
+          initialMonthsData.push({
+            month: i,
+            year: currentYear,
+            label: `${MONTH_NAMES[i - 1]} ${currentYear}`,
+            total: 0,
+            transactions: []
+          })
         }
 
-        setMonthsData(newMonthsData)
+        setMonthsData(initialMonthsData);
       } catch (err) {
         console.error("Error fetching data:", err)
       } finally {
@@ -86,8 +60,71 @@ export default function Home() {
       }
     }
 
-    fetchData()
+    initData()
   }, [])
+
+  const handleSelectMonth = async (index: number) => {
+    setIsLoading(true);
+    try {
+      let personId = "";
+      try {
+        const userInfoStr = getCookie("user_info")
+        if (userInfoStr) {
+          const userInfo = JSON.parse(decodeURIComponent(userInfoStr))
+          if (userInfo.personId) personId = userInfo.personId
+        }
+      } catch (e) {
+        console.error("Error reading user_info cookie:", e)
+      }
+
+      const selectedMonth = monthsData[index];
+      let updatedMonth = { ...selectedMonth };
+
+      // We use the day format exactly as requested by user
+      const dateStr = `${selectedMonth.year}-${String(selectedMonth.month).padStart(2, '0')}-1`
+      const res = await fetch(`/api/month-movements/resume?personId=${personId}&date=${dateStr}`)
+      if (res.ok) {
+        const data = await res.json()
+        console.log("Month movements data fetched on click:", data)
+
+        const rawMovements = data.movements || data.Movements || [];
+        const rawTotal = data.total !== undefined ? data.total : (data.Total || 0);
+
+        const mappedTransactions: Transaction[] = rawMovements.map((m: any) => {
+          const mValue = m.value !== undefined ? m.value : (m.Value || 0);
+          const mId = m.id || m.Id;
+          const mDate = m.date || m.Date;
+          const mMovementName = m.movement?.name || m.Movement?.Name || m.movement?.Name || m.Movement?.name || "Transação";
+
+          return {
+            id: mId,
+            type: mValue >= 0 ? "income" : "expense",
+            amount: Math.abs(mValue),
+            date: mDate ? new Date(mDate).toLocaleDateString("pt-BR") : new Date(selectedMonth.year, selectedMonth.month - 1, 1).toLocaleDateString("pt-BR"),
+            description: mMovementName,
+          };
+        });
+
+        updatedMonth = {
+          ...selectedMonth,
+          total: rawTotal || 0,
+          transactions: mappedTransactions
+        };
+      } else {
+        console.error("Failed to fetch resume:", await res.text());
+      }
+
+      const updatedMonthsData = [...monthsData];
+      updatedMonthsData[index] = updatedMonth;
+      setMonthsData(updatedMonthsData);
+
+    } catch (err) {
+      console.error("Error fetching specific month data:", err);
+    } finally {
+      setIsLoading(false);
+      setSelectedMonthIndex(index);
+    }
+  }
 
   if (isLoading) {
     return (
@@ -116,7 +153,7 @@ export default function Home() {
       <MonthSelector
         userName={userName}
         months={monthsData}
-        onSelect={(index) => setSelectedMonthIndex(index)}
+        onSelect={handleSelectMonth}
       />
     </main>
   )
