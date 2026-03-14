@@ -1,20 +1,25 @@
 "use client"
 
 import { useState } from "react"
-import type { MonthData } from "@/lib/transactions-data"
+import type { MonthData, Transaction } from "@/lib/transactions-data"
 import { BalanceHeader } from "./balance-header"
 import { TransactionList } from "./transaction-list"
+import { NewMovementModal } from "./new-movement-modal"
+import { Plus } from "lucide-react"
 
 interface TransactionsScreenProps {
   monthData: MonthData
+  personId: string | null
   onBack: () => void
+  onRefresh: () => void
 }
 
-export function TransactionsScreen({ monthData, onBack }: TransactionsScreenProps) {
+export function TransactionsScreen({ monthData, personId, onBack, onRefresh }: TransactionsScreenProps) {
   const [transactions, setTransactions] = useState(monthData.transactions)
+  const [isModalOpen, setIsModalOpen] = useState(false)
 
   function handleRemove(id: string) {
-    setTransactions((prev) => prev.filter((t) => t.id !== id))
+    setTransactions((prev: Transaction[]) => prev.filter((t) => t.id !== id))
   }
 
   return (
@@ -28,6 +33,25 @@ export function TransactionsScreen({ monthData, onBack }: TransactionsScreenProp
       <div className="-mt-1 flex-1 rounded-t-2xl bg-card shadow-sm">
         <TransactionList transactions={transactions} onRemove={handleRemove} />
       </div>
+
+      <button
+        onClick={() => setIsModalOpen(true)}
+        className="fixed bottom-6 right-6 flex h-14 w-14 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-lg transition-transform hover:scale-105 active:scale-95"
+        aria-label="Adicionar movimentação"
+      >
+        <Plus className="h-6 w-6" />
+      </button>
+
+      <NewMovementModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onSuccess={() => {
+          setIsModalOpen(false);
+          onRefresh(); // Trigger a refetch of the month resume
+        }}
+        personId={personId}
+        baseDateStr={`${monthData.year}-${String(monthData.month).padStart(2, '0')}-01`}
+      />
     </div>
   )
 }
