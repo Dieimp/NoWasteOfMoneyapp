@@ -142,7 +142,9 @@ export default function Home() {
       <main className="mx-auto min-h-dvh w-full max-w-md">
         <TransactionsScreen
           monthData={monthsData[selectedMonthIndex]}
+          personId={getCookie("user_info") ? JSON.parse(decodeURIComponent(getCookie("user_info")!)).personId : null}
           onBack={() => setSelectedMonthIndex(null)}
+          onRefresh={() => handleSelectMonth(selectedMonthIndex)}
         />
       </main>
     )
