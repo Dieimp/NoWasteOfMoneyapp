@@ -30,6 +30,7 @@ export async function POST(request: NextRequest) {
         const response = NextResponse.json({
             name: data.name,
             email: data.email,
+            personId: data.personId,
             expiresAt: data.expiresAt,
         })
 
@@ -46,6 +47,7 @@ export async function POST(request: NextRequest) {
         response.cookies.set("user_info", JSON.stringify({
             name: data.name,
             email: data.email,
+            personId: data.personId,
         }), {
             httpOnly: false,
             secure: process.env.NODE_ENV === "production",
