@@ -18,8 +18,24 @@ export function TransactionsScreen({ monthData, personId, onBack, onRefresh }: T
   const [transactions, setTransactions] = useState(monthData.transactions)
   const [isModalOpen, setIsModalOpen] = useState(false)
 
-  function handleRemove(id: string) {
-    setTransactions((prev: Transaction[]) => prev.filter((t) => t.id !== id))
+  async function handleRemove(id: string) {
+    try {
+      const response = await fetch(`/api/month-movements/${id}`, {
+        method: "DELETE",
+      })
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => null)
+        alert(errorData?.error || "Erro ao remover movimentação. Tente novamente.")
+        return
+      }
+
+      setTransactions((prev: Transaction[]) => prev.filter((t) => t.id !== id))
+      onRefresh()
+    } catch (error) {
+      console.error("Erro ao remover movimentação:", error)
+      alert("Erro ao remover movimentação. Verifique sua conexão e tente novamente.")
+    }
   }
 
   return (
