@@ -13,6 +13,7 @@ export type MonthData = {
   label: string
   total: number
   transactions: Transaction[]
+  isLoaded?: boolean
 }
 
 export const monthsData: MonthData[] = [

@@ -131,7 +131,7 @@ export function LoginForm() {
           </div>
 
           {/* Remember me + Forgot password */}
-          <div className="flex items-center justify-between">
+          {/* <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <Checkbox
                 id="remember"
@@ -153,7 +153,7 @@ export function LoginForm() {
             >
               Esqueceu a senha?
             </button>
-          </div>
+          </div> */}
 
           {/* Login Button */}
           <Button
@@ -179,13 +179,13 @@ export function LoginForm() {
           </div>
 
           {/* Create Account Button */}
-          <Button
+          {/* <Button
             type="button"
             variant="outline"
             className="h-11 w-full rounded-xl text-sm font-semibold transition-all active:scale-[0.98]"
           >
             Criar conta
-          </Button>
+          </Button> */}
 
           {/* Footer */}
           <div className="mt-auto pt-4 text-center">

@@ -108,7 +108,8 @@ export default function Home() {
         updatedMonth = {
           ...selectedMonth,
           total: rawTotal || 0,
-          transactions: mappedTransactions
+          transactions: mappedTransactions,
+          isLoaded: true
         };
       } else {
         console.error("Failed to fetch resume:", await res.text());
