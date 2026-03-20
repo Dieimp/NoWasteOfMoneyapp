@@ -48,6 +48,10 @@ export function EditMovementModal({ isOpen, transaction, baseDateStr, onClose, o
         setIsLoadingMovements(true)
         try {
             const res = await fetch("/api/movements")
+            if (res.status === 401) {
+                window.location.href = "/login"
+                return
+            }
             if (res.ok) {
                 const data = await res.json()
                 setMovements(data.map((m: any) => ({
@@ -91,6 +95,11 @@ export function EditMovementModal({ isOpen, transaction, baseDateStr, onClose, o
                     value: numValue,
                 }),
             })
+
+            if (res.status === 401) {
+                window.location.href = "/login"
+                return
+            }
 
             if (res.ok) {
                 onSuccess()

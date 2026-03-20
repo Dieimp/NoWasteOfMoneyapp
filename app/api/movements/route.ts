@@ -7,10 +7,7 @@ export async function GET(request: NextRequest) {
         const accessToken = cookieStore.get("access_token")?.value
 
         if (!accessToken) {
-            return NextResponse.json(
-                { error: "Não autenticado" },
-                { status: 403 }
-            )
+            return NextResponse.redirect(new URL("/login", request.url))
         }
 
         const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5018"
@@ -26,6 +23,9 @@ export async function GET(request: NextRequest) {
         })
 
         if (!backendResponse.ok) {
+            if (backendResponse.status === 401 || backendResponse.status === 403) {
+                return NextResponse.redirect(new URL("/login", request.url))
+            }
             const errorData = await backendResponse.json().catch(() => null)
             return NextResponse.json(
                 { error: errorData?.detail || "Erro ao buscar tipos de movimentação" },
@@ -60,10 +60,7 @@ export async function POST(request: NextRequest) {
         const accessToken = cookieStore.get("access_token")?.value
 
         if (!accessToken) {
-            return NextResponse.json(
-                { error: "Não autenticado" },
-                { status: 403 }
-            )
+            return NextResponse.redirect(new URL("/login", request.url))
         }
 
         const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5018"
@@ -95,6 +92,9 @@ export async function POST(request: NextRequest) {
         })
 
         if (!backendResponse.ok) {
+            if (backendResponse.status === 401 || backendResponse.status === 403) {
+                return NextResponse.redirect(new URL("/login", request.url))
+            }
             const errorData = await backendResponse.json().catch(() => null)
             return NextResponse.json(
                 { error: errorData?.detail || errorData?.message || "Erro ao criar novo tipo de movimentação" },
@@ -119,10 +119,7 @@ export async function PUT(request: NextRequest) {
         const accessToken = cookieStore.get("access_token")?.value
 
         if (!accessToken) {
-            return NextResponse.json(
-                { error: "Não autenticado" },
-                { status: 403 }
-            )
+            return NextResponse.redirect(new URL("/login", request.url))
         }
 
         const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5018"
@@ -155,6 +152,9 @@ export async function PUT(request: NextRequest) {
         })
 
         if (!backendResponse.ok) {
+            if (backendResponse.status === 401 || backendResponse.status === 403) {
+                return NextResponse.redirect(new URL("/login", request.url))
+            }
             const errorData = await backendResponse.json().catch(() => null)
             return NextResponse.json(
                 { error: errorData?.detail || errorData?.message || "Erro ao atualizar tipo de movimentação" },
