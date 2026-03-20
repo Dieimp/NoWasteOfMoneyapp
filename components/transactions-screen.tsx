@@ -5,6 +5,7 @@ import type { MonthData, Transaction } from "@/lib/transactions-data"
 import { BalanceHeader } from "./balance-header"
 import { TransactionList } from "./transaction-list"
 import { NewMovementModal } from "./new-movement-modal"
+import { EditMovementModal } from "./edit-movement-modal"
 import { Plus } from "lucide-react"
 
 interface TransactionsScreenProps {
@@ -17,6 +18,7 @@ interface TransactionsScreenProps {
 export function TransactionsScreen({ monthData, personId, onBack, onRefresh }: TransactionsScreenProps) {
   const [transactions, setTransactions] = useState(monthData.transactions)
   const [isModalOpen, setIsModalOpen] = useState(false)
+  const [editingTransaction, setEditingTransaction] = useState<Transaction | null>(null)
 
   async function handleRemove(id: string) {
     try {
@@ -38,6 +40,10 @@ export function TransactionsScreen({ monthData, personId, onBack, onRefresh }: T
     }
   }
 
+  function handleEdit(transaction: Transaction) {
+    setEditingTransaction(transaction)
+  }
+
   return (
     <div className="flex min-h-dvh flex-col bg-background">
       <BalanceHeader
@@ -47,7 +53,11 @@ export function TransactionsScreen({ monthData, personId, onBack, onRefresh }: T
       />
 
       <div className="-mt-1 flex-1 rounded-t-2xl bg-card shadow-sm">
-        <TransactionList transactions={transactions} onRemove={handleRemove} />
+        <TransactionList
+          transactions={transactions}
+          onRemove={handleRemove}
+          onEdit={handleEdit}
+        />
       </div>
 
       <button
@@ -67,6 +77,17 @@ export function TransactionsScreen({ monthData, personId, onBack, onRefresh }: T
         }}
         personId={personId}
         baseDateStr={`${monthData.year}-${String(monthData.month).padStart(2, '0')}-01`}
+      />
+
+      <EditMovementModal
+        isOpen={editingTransaction !== null}
+        transaction={editingTransaction}
+        baseDateStr={`${monthData.year}-${String(monthData.month).padStart(2, '0')}-01`}
+        onClose={() => setEditingTransaction(null)}
+        onSuccess={() => {
+          setEditingTransaction(null)
+          onRefresh()
+        }}
       />
     </div>
   )

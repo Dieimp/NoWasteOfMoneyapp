@@ -6,9 +6,10 @@ import { TransactionItem } from "./transaction-item"
 interface TransactionListProps {
   transactions: Transaction[]
   onRemove: (id: string) => void
+  onEdit: (transaction: Transaction) => void
 }
 
-export function TransactionList({ transactions, onRemove }: TransactionListProps) {
+export function TransactionList({ transactions, onRemove, onEdit }: TransactionListProps) {
   if (transactions.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center px-5 py-16 text-center">
@@ -30,6 +31,7 @@ export function TransactionList({ transactions, onRemove }: TransactionListProps
             key={transaction.id}
             transaction={transaction}
             onRemove={onRemove}
+            onEdit={onEdit}
           />
         ))}
       </div>
