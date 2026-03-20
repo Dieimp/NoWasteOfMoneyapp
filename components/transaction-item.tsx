@@ -41,8 +41,7 @@ export function TransactionItem({ transaction, onRemove, onEdit }: TransactionIt
           {formatCurrency(transaction.amount)}
         </span>
         <span className="truncate text-xs text-muted-foreground">
-          {transaction.date}
-          {transaction.description && ` \u2022 ${transaction.description}`}
+          {transaction.description || "Transação"}
         </span>
       </div>
 
