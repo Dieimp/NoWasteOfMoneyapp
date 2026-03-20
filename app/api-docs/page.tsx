@@ -2,7 +2,7 @@ import type { Metadata } from "next"
 import { ApiDocsScreen } from "@/components/api-docs-screen"
 
 export const metadata: Metadata = {
-    title: "API Docs | Minhas Finanças",
+    title: "API Docs | NoWasteOfMoney",
     description: "Documentação da API e teste de conexão",
 }
 

@@ -59,8 +59,8 @@ export function LoginForm() {
             <Wallet className="h-7 w-7 text-[oklch(0.95_0_0)]" />
           </div>
           <div>
-            <h1 className="text-2xl font-bold text-[oklch(0.98_0_0)]">
-              Minhas Finanças
+            <h1 className="text-2xl font-bold tracking-tight text-[oklch(0.98_0_0)]">
+              NoWasteOfMoney
             </h1>
             <p className="mt-1 text-sm text-[oklch(0.78_0.06_265)]">
               Entre na sua conta para continuar
@@ -131,7 +131,7 @@ export function LoginForm() {
           </div>
 
           {/* Remember me + Forgot password */}
-          <div className="flex items-center justify-between">
+          {/* <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <Checkbox
                 id="remember"
@@ -153,7 +153,7 @@ export function LoginForm() {
             >
               Esqueceu a senha?
             </button>
-          </div>
+          </div> */}
 
           {/* Login Button */}
           <Button
@@ -179,13 +179,13 @@ export function LoginForm() {
           </div>
 
           {/* Create Account Button */}
-          <Button
+          {/* <Button
             type="button"
             variant="outline"
             className="h-11 w-full rounded-xl text-sm font-semibold transition-all active:scale-[0.98]"
           >
             Criar conta
-          </Button>
+          </Button> */}
 
           {/* Footer */}
           <div className="mt-auto pt-4 text-center">

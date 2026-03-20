@@ -47,7 +47,9 @@ export function MonthSelector({ userName, months, onSelect }: MonthSelectorProps
                 {month.label}
               </span>
               <span className="text-xs text-muted-foreground">
-                {month.transactions.length} transações • {formatCurrency(month.total)}
+                {month.isLoaded 
+                  ? `${month.transactions.length} transações • ${formatCurrency(month.total)}` 
+                  : "Clique no mês para atualizar as informações"}
               </span>
             </div>
             <ChevronRight className="h-5 w-5 text-muted-foreground/50 transition-transform group-hover:translate-x-0.5" />

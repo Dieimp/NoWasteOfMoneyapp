@@ -95,10 +95,20 @@ export default function Home() {
           const mId = m.id || m.Id;
           const mDate = m.date || m.Date;
           const mMovementName = m.movement?.name || m.Movement?.Name || m.movement?.Name || m.Movement?.name || "Transação";
+          const mTypeId = m.movement?.movementTypeId || m.Movement?.MovementTypeId || m.movement?.MovementTypeId || m.Movement?.movementTypeId;
+          
+          let tType: "income" | "expense" = "income";
+          if (mTypeId === 1) {
+              tType = "expense";
+          } else if (mTypeId === 2) {
+              tType = "income";
+          } else {
+              tType = mValue >= 0 ? "income" : "expense"; // fallback
+          }
 
           return {
             id: mId,
-            type: mValue >= 0 ? "income" : "expense",
+            type: tType,
             amount: Math.abs(mValue),
             date: mDate ? new Date(mDate).toLocaleDateString("pt-BR") : new Date(selectedMonth.year, selectedMonth.month - 1, 1).toLocaleDateString("pt-BR"),
             description: mMovementName,
@@ -108,7 +118,8 @@ export default function Home() {
         updatedMonth = {
           ...selectedMonth,
           total: rawTotal || 0,
-          transactions: mappedTransactions
+          transactions: mappedTransactions,
+          isLoaded: true
         };
       } else {
         console.error("Failed to fetch resume:", await res.text());
