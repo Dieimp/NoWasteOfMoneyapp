@@ -10,10 +10,7 @@ export async function PUT(
         const accessToken = cookieStore.get("access_token")?.value
 
         if (!accessToken) {
-            return NextResponse.json(
-                { error: "Não autenticado" },
-                { status: 401 }
-            )
+            return NextResponse.redirect(new URL("/login", request.url))
         }
 
         const { id } = await params
@@ -56,6 +53,9 @@ export async function PUT(
         })
 
         if (!backendResponse.ok) {
+            if (backendResponse.status === 401 || backendResponse.status === 403) {
+                return NextResponse.redirect(new URL("/login", request.url))
+            }
             const errorData = await backendResponse.json().catch(() => null)
             return NextResponse.json(
                 { error: errorData?.detail || errorData?.message || "Erro ao atualizar movimentação" },
@@ -89,10 +89,7 @@ export async function DELETE(
         const accessToken = cookieStore.get("access_token")?.value
 
         if (!accessToken) {
-            return NextResponse.json(
-                { error: "Não autenticado" },
-                { status: 401 }
-            )
+            return NextResponse.redirect(new URL("/login", request.url))
         }
 
         const { id } = await params
@@ -116,6 +113,9 @@ export async function DELETE(
         })
 
         if (!backendResponse.ok) {
+            if (backendResponse.status === 401 || backendResponse.status === 403) {
+                return NextResponse.redirect(new URL("/login", request.url))
+            }
             const errorData = await backendResponse.json().catch(() => null)
             return NextResponse.json(
                 { error: errorData?.detail || errorData?.message || "Erro ao deletar movimentação" },
