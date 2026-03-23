@@ -1,9 +1,11 @@
 import { NextRequest, NextResponse } from "next/server"
 
 export async function POST(request: NextRequest) {
+    console.log("Login proxy received request");
     try {
         const body = await request.json()
-        const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5018"
+        const apiUrl = process.env.INTERNAL_API_URL || process.env.NEXT_PUBLIC_API_URL || "http://localhost:5018"
+        console.log(`Forwarding login to: ${apiUrl}/api/User/login`);
 
         const backendResponse = await fetch(`${apiUrl}/api/User/login`, {
             method: "POST",
@@ -12,6 +14,7 @@ export async function POST(request: NextRequest) {
             },
             body: JSON.stringify(body),
         })
+        console.log(`Backend responded with status: ${backendResponse.status}`);
 
         if (!backendResponse.ok) {
             const errorData = await backendResponse.json().catch(() => null)

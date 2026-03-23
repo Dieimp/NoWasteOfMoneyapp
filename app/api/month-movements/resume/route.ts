@@ -10,7 +10,7 @@ export async function GET(request: NextRequest) {
             return NextResponse.redirect(new URL("/login", request.url))
         }
         console.log("entrou no rtoute ts")
-        const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5018"
+        const apiUrl = process.env.INTERNAL_API_URL || process.env.NEXT_PUBLIC_API_URL || "http://localhost:5018"
         const { searchParams } = new URL(request.url)
 
         let personId = searchParams.get("personId")

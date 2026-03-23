@@ -10,7 +10,7 @@ export async function GET(request: NextRequest) {
             return NextResponse.redirect(new URL("/login", request.url))
         }
 
-        const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5018"
+        const apiUrl = process.env.INTERNAL_API_URL || process.env.NEXT_PUBLIC_API_URL || "http://localhost:5018"
         // We'll fetch pages of movements. Typically page 1, size 100 to get a good list for the combobox
         const url = `${apiUrl}/api/Movement?pageNumber=1&pageSize=100`
 
@@ -63,7 +63,7 @@ export async function POST(request: NextRequest) {
             return NextResponse.redirect(new URL("/login", request.url))
         }
 
-        const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5018"
+        const apiUrl = process.env.INTERNAL_API_URL || process.env.NEXT_PUBLIC_API_URL || "http://localhost:5018"
         const body = await request.json()
 
         // Backend expects CreateMovementRequest record (Name, Description, MovementTypeId)
@@ -122,7 +122,7 @@ export async function PUT(request: NextRequest) {
             return NextResponse.redirect(new URL("/login", request.url))
         }
 
-        const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5018"
+        const apiUrl = process.env.INTERNAL_API_URL || process.env.NEXT_PUBLIC_API_URL || "http://localhost:5018"
         const { searchParams } = new URL(request.url)
         const id = searchParams.get("id")
 
