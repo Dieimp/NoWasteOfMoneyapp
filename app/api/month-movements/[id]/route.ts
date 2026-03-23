@@ -40,7 +40,7 @@ export async function PUT(
             )
         }
 
-        const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5018"
+        const apiUrl = process.env.INTERNAL_API_URL || process.env.NEXT_PUBLIC_API_URL || "http://localhost:5018"
         const url = `${apiUrl}/api/MonthMovements/${id}`
 
         const backendResponse = await fetch(url, {
@@ -101,7 +101,7 @@ export async function DELETE(
             )
         }
 
-        const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5018"
+        const apiUrl = process.env.INTERNAL_API_URL || process.env.NEXT_PUBLIC_API_URL || "http://localhost:5018"
         const url = `${apiUrl}/api/MonthMovements/${id}`
 
         const backendResponse = await fetch(url, {
