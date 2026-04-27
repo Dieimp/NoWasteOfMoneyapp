@@ -1,26 +1,49 @@
 "use client"
 
 import { useState } from "react"
-import { Eye, EyeOff, Lock, Mail, Wallet } from "lucide-react"
+import { useRouter } from "next/navigation"
+import { Eye, EyeOff, Lock, Mail, Wallet, AlertCircle } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
 
 export function LoginForm() {
+  const router = useRouter()
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [showPassword, setShowPassword] = useState(false)
   const [rememberMe, setRememberMe] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsLoading(true)
-    console.log("Login attempt:", { email, password, rememberMe })
-    // Simulate loading for UI feedback
-    await new Promise((resolve) => setTimeout(resolve, 1500))
-    setIsLoading(false)
+    setError(null)
+
+    try {
+      const res = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      })
+
+      const data = await res.json()
+
+      if (!res.ok) {
+        setError(data.error || "Credenciais inválidas")
+        return
+      }
+
+      // Login successful — JWT is now stored in HTTP-only cookie
+      // Redirect to home page
+      router.push("/")
+    } catch {
+      setError("Erro ao conectar com o servidor. Tente novamente.")
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   return (
@@ -36,8 +59,8 @@ export function LoginForm() {
             <Wallet className="h-7 w-7 text-[oklch(0.95_0_0)]" />
           </div>
           <div>
-            <h1 className="text-2xl font-bold text-[oklch(0.98_0_0)]">
-              Minhas Finanças
+            <h1 className="text-2xl font-bold tracking-tight text-[oklch(0.98_0_0)]">
+              NoWasteOfMoney
             </h1>
             <p className="mt-1 text-sm text-[oklch(0.78_0.06_265)]">
               Entre na sua conta para continuar
@@ -49,6 +72,14 @@ export function LoginForm() {
       {/* Card Body */}
       <div className="-mt-6 flex flex-1 flex-col rounded-t-3xl bg-background px-6 pb-8 pt-8 shadow-[0_-4px_20px_oklch(0_0_0/0.06)]">
         <form onSubmit={handleSubmit} className="flex flex-1 flex-col gap-5">
+          {/* Error Message */}
+          {error && (
+            <div className="flex items-center gap-2.5 rounded-xl border border-destructive/20 bg-destructive/5 px-4 py-3 animate-in fade-in slide-in-from-top-1 duration-300">
+              <AlertCircle className="h-4 w-4 shrink-0 text-destructive" />
+              <p className="text-sm text-destructive">{error}</p>
+            </div>
+          )}
+
           {/* Email Field */}
           <div className="space-y-2">
             <Label htmlFor="email" className="text-sm font-medium text-foreground">
@@ -100,7 +131,7 @@ export function LoginForm() {
           </div>
 
           {/* Remember me + Forgot password */}
-          <div className="flex items-center justify-between">
+          {/* <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <Checkbox
                 id="remember"
@@ -122,7 +153,7 @@ export function LoginForm() {
             >
               Esqueceu a senha?
             </button>
-          </div>
+          </div> */}
 
           {/* Login Button */}
           <Button
@@ -148,13 +179,13 @@ export function LoginForm() {
           </div>
 
           {/* Create Account Button */}
-          <Button
+          {/* <Button
             type="button"
             variant="outline"
             className="h-11 w-full rounded-xl text-sm font-semibold transition-all active:scale-[0.98]"
           >
             Criar conta
-          </Button>
+          </Button> */}
 
           {/* Footer */}
           <div className="mt-auto pt-4 text-center">

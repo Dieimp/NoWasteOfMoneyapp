@@ -4,6 +4,7 @@ export type Transaction = {
   amount: number
   date: string
   description?: string
+  movementId?: string
 }
 
 export type MonthData = {
@@ -12,6 +13,7 @@ export type MonthData = {
   label: string
   total: number
   transactions: Transaction[]
+  isLoaded?: boolean
 }
 
 export const monthsData: MonthData[] = [
