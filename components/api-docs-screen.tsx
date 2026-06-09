@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { ArrowLeft, CheckCircle2, XCircle, Loader2, ExternalLink, RefreshCw } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
@@ -10,7 +10,16 @@ type ConnectionStatus = "idle" | "loading" | "connected" | "error"
 export function ApiDocsScreen() {
     const [status, setStatus] = useState<ConnectionStatus>("idle")
     const [responseInfo, setResponseInfo] = useState<string>("")
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5018"
+    const [apiUrl, setApiUrl] = useState("")
+
+    useEffect(() => {
+        const envUrl = process.env.NEXT_PUBLIC_API_URL;
+        if (envUrl && envUrl.startsWith("http")) {
+            setApiUrl(envUrl);
+        } else if (typeof window !== "undefined") {
+            setApiUrl(window.location.origin);
+        }
+    }, [])
 
     const testConnection = async () => {
         setStatus("loading")
